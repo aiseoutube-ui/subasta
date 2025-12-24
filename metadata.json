@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Subasta Gamarra Streaming",
+  "description": "Una plataforma de subastas en tiempo real diseñada para el mercado peruano, con integración de streaming de YouTube y pagos vía Yape/Plin.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
