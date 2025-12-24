@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { User, AuctionStatus, HistoryItem } from './types';
+import { User, AuctionStatus, HistoryItem } from './types.ts';
 import { 
   Trophy, 
   Clock, 
@@ -35,7 +35,6 @@ const App: React.FC = () => {
   const serverOffsetRef = useRef<number>(0);
 
   useEffect(() => {
-    // Verificar si ya era admin en esta sesión
     if (localStorage.getItem('gamarra_admin_session') === 'true') {
       setIsAdmin(true);
     }
@@ -43,20 +42,18 @@ const App: React.FC = () => {
     if (savedUser) setUser(JSON.parse(savedUser));
   }, []);
 
-  // Función para activar modo admin con 5 clics
   const handleLogoClick = () => {
     const newCount = adminClicks + 1;
     if (newCount >= 5) {
       setIsAdmin(true);
       localStorage.setItem('gamarra_admin_session', 'true');
       setAdminClicks(0);
-      // Feedback visual rápido
       setError("MODO ADMINISTRADOR ACTIVADO");
       setTimeout(() => setError(null), 2000);
     } else {
       setAdminClicks(newCount);
-      // Reiniciar contador después de 2 segundos de inactividad
-      setTimeout(() => setAdminClicks(0), 2000);
+      const timer = setTimeout(() => setAdminClicks(0), 2000);
+      return () => clearTimeout(timer);
     }
   };
 
@@ -122,7 +119,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col max-w-md mx-auto shadow-2xl bg-slate-950 border-x border-white/5 font-sans relative overflow-hidden text-slate-100">
       
-      {/* HEADER CON BOTÓN OCULTO EN EL LOGO */}
       <header className="bg-slate-900/80 backdrop-blur-md p-4 sticky top-0 z-50 border-b border-white/10 flex justify-between items-center">
         <div 
           onClick={handleLogoClick}
@@ -158,7 +154,6 @@ const App: React.FC = () => {
         )}
       </header>
 
-      {/* VIDEO / STATUS OVERLAYS */}
       <section className="relative aspect-video bg-black group shadow-2xl">
         <iframe className="w-full h-full opacity-60" src={`https://www.youtube.com/embed/${YOUTUBE_LIVE_ID}?autoplay=1&mute=1&controls=0&modestbranding=1`} title="Live" allow="autoplay; encrypted-media" />
         
@@ -178,7 +173,6 @@ const App: React.FC = () => {
         )}
       </section>
 
-      {/* MAIN CONTENT */}
       <main className="flex-1 p-4 space-y-4 bg-slate-950 overflow-y-auto pb-32">
         {auction ? (
           <>
@@ -213,7 +207,6 @@ const App: React.FC = () => {
                   </div>
                </div>
                
-               {/* BOTONES DE PUJA PARA USUARIOS */}
                {!isAdmin && auction.isActive && !auction.isPaused && (
                  <div className="grid grid-cols-3 gap-2 mt-4 animate-in slide-in-from-bottom-2">
                     {[5, 10, 20].map(val => (
@@ -234,7 +227,6 @@ const App: React.FC = () => {
                )}
             </div>
 
-            {/* HISTORIAL */}
             <div className="space-y-2">
                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] text-center mb-4 italic">Cronología de Pujas</p>
                {history.length > 0 ? history.map((h, i) => (
@@ -259,7 +251,6 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* PANEL DEL MARTILLERO (SOLO ADMIN) */}
       {isAdmin && (
         <div className="fixed bottom-0 inset-x-0 bg-slate-900 p-4 border-t-2 border-amber-500/30 z-[100] flex flex-col gap-3 shadow-[0_-20px_50px_rgba(0,0,0,0.8)] animate-in slide-in-from-bottom duration-300">
            <div className="flex items-center justify-center gap-2 mb-1">
@@ -268,7 +259,6 @@ const App: React.FC = () => {
            </div>
            
            <div className="flex gap-2">
-              {/* BOTÓN 1: INICIAR PUJA (Si está en pausa) */}
               {!auction?.isActive && auction?.isPaused && (
                 <button 
                   onClick={() => handleAction('admin_start')} 
@@ -279,7 +269,6 @@ const App: React.FC = () => {
                 </button>
               )}
 
-              {/* BOTÓN 2: VENDIDO / CERRAR (Si está activa) */}
               {auction?.isActive && (
                 <button 
                   onClick={() => handleAction('admin_close')} 
@@ -290,7 +279,6 @@ const App: React.FC = () => {
                 </button>
               )}
 
-              {/* BOTÓN 3: SIGUIENTE PRODUCTO (Si ya se cerró) */}
               {!auction?.isActive && !auction?.isPaused && (
                 <button 
                   onClick={() => handleAction('admin_next')} 
@@ -304,7 +292,6 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL REGISTRO PARA USUARIOS NUEVOS */}
       {isRegistering && !isAdmin && (
         <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-end justify-center p-4">
           <div className="bg-slate-900 w-full rounded-[3rem] p-10 border border-white/10 animate-in slide-in-from-bottom">
@@ -333,7 +320,6 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* NOTIFICACIONES Y ERRORES */}
       {error && (
         <div className={`fixed top-20 inset-x-6 z-[250] ${error.includes('ACTIVADO') ? 'bg-green-600' : 'bg-red-600'} text-white p-4 rounded-2xl flex items-center gap-3 shadow-2xl animate-in slide-in-from-top duration-300`}>
           <AlertCircle size={20} />

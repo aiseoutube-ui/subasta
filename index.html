@@ -10,13 +10,22 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #020617; /* slate-950 */
+            color: #f8fafc;
         }
-        .yape-bg { background-color: #742284; } /* Púrpura Yape */
+        .yape-bg { background-color: #742284; }
         .yape-text { color: #742284; }
-        .plin-bg { background-color: #00bcd4; } /* Azul Plin */
+        .plin-bg { background-color: #00bcd4; }
         .plin-text { color: #00bcd4; }
-        .success-green { background-color: #00d28d; } /* Verde éxito */
+        
+        /* Animaciones personalizadas */
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 8s linear infinite;
+        }
     </style>
 <script type="importmap">
 {
@@ -31,5 +40,7 @@
 </head>
 <body class="antialiased">
     <div id="root"></div>
+    <!-- Script de entrada vital para evitar pantalla en blanco -->
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>
